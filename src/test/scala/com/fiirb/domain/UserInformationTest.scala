@@ -1,13 +1,15 @@
 package com.fiirb.domain
 
+import cats.effect.IO
+import com.fiirb.domain.user.UserInformation
 import io.circe.Decoder.Result
-import io.circe.generic.auto._
 import io.circe.literal._
-import munit.FunSuite
+import io.circe.syntax._
+import munit.CatsEffectSuite
 
 import scala.util.Random
 
-class UserInformationTest extends FunSuite {
+class UserInformationTest extends CatsEffectSuite {
 
   def userInformation(creditScore: Int = Random.between(0, 700),
                       salary: Int = Random.between(0, 10_000_000)): Result[UserInformation] = {
@@ -26,7 +28,7 @@ class UserInformationTest extends FunSuite {
 
     val negativeScore = -Random.between(1, 700)
 
-    val err = intercept[IllegalArgumentException]{
+    val err = intercept[IllegalArgumentException] {
       userInformation(creditScore = negativeScore)
     }
 
@@ -42,6 +44,24 @@ class UserInformationTest extends FunSuite {
     }
 
     assertEquals(err.getMessage, "requirement failed: invalid credit score")
+  }
+
+  test("can be converted to clear score request json") {
+
+    val userInformation = UserInformation("Brian Lewis", 500, Int.MaxValue)
+
+    val clearScoreRequest = userInformation.toCSRequest[IO].map(_.asJson)
+
+    assertIO(clearScoreRequest, json"""{"name": "Brian Lewis", "creditScore": 500}""")
+  }
+
+  test("can be converted to scored request json") {
+
+    val userInformation = UserInformation("Brian Lewis", 500, 1)
+
+    val clearScoreRequest = userInformation.toScoredCardsRequest[IO].map(_.asJson)
+
+    assertIO(clearScoreRequest, json"""{"name": "Brian Lewis", "score": 500, "salary": 1}""")
   }
 
 }

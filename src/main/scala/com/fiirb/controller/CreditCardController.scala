@@ -1,25 +1,24 @@
 package com.fiirb.controller
 
-import cats.effect.IO
-import com.fiirb.domain.UserInformation
-import com.fiirb.util.BaseController
-import io.circe.generic.auto._
-import io.circe.syntax._
+import cats.effect.Sync
+import cats.implicits._
+import com.fiirb.domain.user.UserInformation
+import com.fiirb.service.CreditCardService
 import org.http4s.HttpRoutes
-import org.http4s.circe._
-import org.http4s.dsl.io._
+import org.http4s.dsl.Http4sDsl
 
-import scala.concurrent.ExecutionContext
+class CreditCardController[F[_] : Sync](creditCardService: CreditCardService[F])(implicit dsl: Http4sDsl[F]) {
 
-class CreditCardController()(implicit ec: ExecutionContext) extends BaseController {
+  import dsl._
 
-  val creditCardRoutes = HttpRoutes.of[IO] {
+  val creditCardRoutes = HttpRoutes.of[F] {
     case req@POST -> Root / "creditcards" =>
       for {
         userinfo <- req.as[UserInformation]
-        resp <- Ok(userinfo.asJson)
+        cSCards <- creditCardService.action(userinfo)
+        resp <- Ok(cSCards)
       } yield resp
   }
 
-  val route: HttpRoutes[IO] = creditCardRoutes
+  val route: HttpRoutes[F] = creditCardRoutes
 }

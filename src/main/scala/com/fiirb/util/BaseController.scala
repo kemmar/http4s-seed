@@ -1,10 +1,9 @@
 package com.fiirb.util
 
-import cats.effect.IO
 import org.http4s.HttpRoutes
+import org.http4s.dsl.Http4sDsl
 
-abstract class BaseController {
-
-  def route: HttpRoutes[IO]
+abstract class BaseController[F[_]] {
+  def route: HttpRoutes[F]
 
 }
