@@ -24,3 +24,5 @@ libraryDependencies ++= Seq(
   "org.scalameta" %% "munit" % MunitVersion % Test,
   "org.typelevel" %% "munit-cats-effect-2" % MunitCatsEffectVersion % Test,
 )
+
+assembly / assemblyJarName := "BrianLewis.jar"
