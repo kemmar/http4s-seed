@@ -1,15 +1,15 @@
-package com.fiirb.service
+package com.fiirb.endpoint
 
 import cats.effect.IO
 import com.fiirb.domain.scoredcard.ScoredCardResult
-import munit.CatsEffectSuite
-import org.http4s.client.UnexpectedStatus
-import org.http4s.{Status, Uri}
+import com.fiirb.error.Errors.ServiceError
 import com.fiirb.util.TestData.USER_INFORMATION
 import com.fiirb.util.TestHttpClient
+import munit.CatsEffectSuite
+import org.http4s.{Status, Uri}
 
-class ScoredCardsServiceTest extends CatsEffectSuite with TestHttpClient {
-  private val uri = Uri.uri("https://app.clearscore.com/api/global/backend-tech-test/v2/creditcards")
+class ScoredCardsEndpointTest extends CatsEffectSuite with TestHttpClient {
+  private val uri = Uri.uri("https://test.com/api/global/backend-tech-test/v2/creditcards")
 
   test("can handle successful requests") {
     val client = httpClient(
@@ -21,7 +21,7 @@ class ScoredCardsServiceTest extends CatsEffectSuite with TestHttpClient {
           |}]""".stripMargin
     )
 
-    val service = new ScoredCardsService[IO](client)
+    val service = new ScoredCardsEndpoint[IO](client)
 
     assertIO(service.getCreditCards(USER_INFORMATION),
       List(ScoredCardResult("SuperSaver Card", 123, 5.5
@@ -36,9 +36,9 @@ class ScoredCardsServiceTest extends CatsEffectSuite with TestHttpClient {
         """The request content was malformed:
           |Expected String as JsString, but got 5""".stripMargin, status = Status.BadRequest)
 
-    val service = new ScoredCardsService[IO](client)
+    val service = new ScoredCardsEndpoint[IO](client)
 
-    interceptIO[UnexpectedStatus](service.getCreditCards(USER_INFORMATION))
+    interceptIO[ServiceError](service.getCreditCards(USER_INFORMATION))
   }
 
   test("can handle failed 5** requests") {
@@ -48,9 +48,9 @@ class ScoredCardsServiceTest extends CatsEffectSuite with TestHttpClient {
         uri = uri,
         status = Status.ServiceUnavailable)
 
-    val service = new ScoredCardsService[IO](client)
+    val service = new ScoredCardsEndpoint[IO](client)
 
-    interceptIO[UnexpectedStatus](service.getCreditCards(USER_INFORMATION))
+    interceptIO[ServiceError](service.getCreditCards(USER_INFORMATION))
   }
 
 }

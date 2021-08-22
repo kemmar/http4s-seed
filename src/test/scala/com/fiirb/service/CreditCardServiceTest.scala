@@ -5,14 +5,14 @@ import cats.implicits._
 import com.fiirb.domain.cscard.CSResult
 import com.fiirb.domain.scoredcard.ScoredCardResult
 import com.fiirb.domain.user.UserResult
+import com.fiirb.endpoint.{CSCardsEndpoint, ScoredCardsEndpoint}
 import com.fiirb.util.TestData.USER_INFORMATION
 import munit.CatsEffectSuite
-import org.http4s.client.Client
 import org.mockito.MockitoSugar
 
 class CreditCardServiceTest extends CatsEffectSuite with MockitoSugar {
-  val mockScoredCardsService = mock[ScoredCardsService[IO]]
-  val mockCSCardsService = mock[CSCardsService[IO]]
+  val mockScoredCardsService = mock[ScoredCardsEndpoint[IO]]
+  val mockCSCardsService = mock[CSCardsEndpoint[IO]]
 
   val service = new CreditCardService[IO](mockCSCardsService, mockScoredCardsService)
 

@@ -5,14 +5,15 @@ import cats.implicits._
 import com.fiirb.domain.cscard.CSResult
 import com.fiirb.domain.scoredcard.ScoredCardResult
 import com.fiirb.domain.user.{UserInformation, UserResult}
+import com.fiirb.endpoint.{CSCardsEndpoint, ScoredCardsEndpoint}
 
-class CreditCardService[F[_] : ConcurrentEffect](cSCardsService: CSCardsService[F],
-                                                 scoredCardsService: ScoredCardsService[F]) {
+class CreditCardService[F[_] : ConcurrentEffect](cSCardsEndpoint: CSCardsEndpoint[F],
+                                                 scoredCardsEndpoint: ScoredCardsEndpoint[F]) {
 
   def action(userInformation: UserInformation): F[List[UserResult]] = {
     for {
-      cSResp <- cSCardsService.getCreditCards(userInformation)
-      scoredResp <- scoredCardsService.getCreditCards(userInformation)
+      cSResp <- cSCardsEndpoint.getCreditCards(userInformation)
+      scoredResp <- scoredCardsEndpoint.getCreditCards(userInformation)
       result <- aggregateAndSort(cSResp, scoredResp)
     } yield result
   }
