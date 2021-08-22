@@ -10,9 +10,11 @@ val MunitCatsEffectVersion = "1.0.5"
 val circeVersion = "0.14.1"
 val scalaTestVersion = "3.2.0"
 val mockitoVersion = "1.16.37"
+val jsoupVersion = "1.6.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.4.1",
+  "org.jsoup" % "jsoup" % jsoupVersion,
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,

@@ -1,6 +1,5 @@
 package com.fiirb.util
 
-import com.fiirb.domain.user.UserInformation
 import org.http4s.Uri
 
 trait ServiceBase[F[_], T] {
@@ -10,6 +9,4 @@ trait ServiceBase[F[_], T] {
     throw _,
     res => res
   )
-
-  def getCreditCards(userInformation: UserInformation): F[List[T]]
 }
