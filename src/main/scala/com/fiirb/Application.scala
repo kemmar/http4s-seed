@@ -8,14 +8,17 @@ import scala.concurrent.ExecutionContext.global
 
 object Application extends IOApp with Services {
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def service[F[_]: ConcurrentEffect](implicit timer: Timer[F]): F[Unit] = {
     for {
-      exitCode <- BlazeServerBuilder[IO](global)
-        .bindHttp(8080, "0.0.0.0")
-        .withHttpApp(routeAggregator[IO]().routes)
+      client <- blazeClient
+      exitCode <- BlazeServerBuilder(global)
+        .bindHttp(AppConfig.basePort, "0.0.0.0")
+        .withHttpApp(routeAggregator.routes)
+        .withServiceErrorHandler(new ErrorHandler().errorHandler)
         .serve
     } yield exitCode
   }.compile
     .drain
-    .as(ExitCode.Success)
+
+  def run(args: List[String]): IO[ExitCode] = service[IO].as(ExitCode.Success)
 }

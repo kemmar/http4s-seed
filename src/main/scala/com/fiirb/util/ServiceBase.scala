@@ -1,12 +1,26 @@
 package com.fiirb.util
 
+import cats.effect.Sync
+import com.fiirb.domain.user.UserInformation
 import org.http4s.Uri
+import cats.implicits._
+import com.fiirb.error.Errors.UriError
 
-trait ServiceBase[F[_], T] {
+import scala.util.control.NonFatal
+
+abstract class ServiceBase[F[_] : Sync, T] {
+
+
   def endpointUri: String
 
-  lazy val endpoint: Uri = Uri.fromString(endpointUri).fold(
-    throw _,
-    res => res
-  )
+  def endpointName: String
+
+  lazy val endpoint: F[Uri] =
+    Sync[F]
+      .fromEither(Uri.fromString(endpointUri))
+      .adaptError {
+    case NonFatal(err: Throwable) => UriError(endpointUri, err.getMessage)
+  }
+
+  def getCreditCards(userInformation: UserInformation): F[List[T]]
 }
