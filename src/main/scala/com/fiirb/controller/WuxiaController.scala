@@ -24,6 +24,24 @@ class WuxiaController[F[_]: Sync](wuxiaService: WuxiaService[F])(implicit dsl: H
         novelList <- wuxiaService.listNovels()
         resp <- Ok(novelList)
       } yield resp
+
+    case GET -> Root / "novel" / name =>
+      for {
+        novelInformation <- wuxiaService.listNovelChapters(name)
+        resp <- Ok(novelInformation)
+      } yield resp
+
+    case POST -> Root / "novel" / name =>
+      for {
+        novelInformation <- wuxiaService.download(name)
+        resp <- Ok(novelInformation)
+      } yield resp
+
+    case GET -> Root / "novel" / name / chapter =>
+      for {
+        novelChapter <- wuxiaService.readNovelChapter(name, chapter)
+        resp <- Ok(novelChapter)
+      } yield resp
   }
 
   val route: HttpRoutes[F] = searchNovelsRoutes

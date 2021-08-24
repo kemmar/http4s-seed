@@ -1,7 +1,6 @@
 package com.fiirb.util
 
 import cats.effect.Sync
-import com.fiirb.domain.user.UserInformation
 import org.http4s.Uri
 import cats.implicits._
 import com.fiirb.error.Errors.UriError
@@ -21,6 +20,4 @@ abstract class ServiceBase[F[_] : Sync, T] {
       .adaptError {
     case NonFatal(err: Throwable) => UriError(endpointUri, err.getMessage)
   }
-
-  def getCreditCards(userInformation: UserInformation): F[List[T]]
 }

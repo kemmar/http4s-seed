@@ -7,8 +7,6 @@ object AppConfig {
 
   lazy val basePort: Int = conf.getInt("app.port")
 
-  lazy val csCardsBaseUrl: String = conf.getString("cs_cards.base_url")
-
-  lazy val scoredCardsBaseUrl: String = conf.getString("scored_cards.base_url")
+  lazy val novelServiceBaseUrl: String = conf.getString("novel_service.base_url")
 
 }

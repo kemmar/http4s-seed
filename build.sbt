@@ -21,10 +21,8 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-circe" % http4sVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-literal" % circeVersion,
-  "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-  "org.mockito" %% "mockito-scala" % mockitoVersion % Test,
-  "org.scalameta" %% "munit" % MunitVersion % Test,
-  "org.typelevel" %% "munit-cats-effect-2" % MunitCatsEffectVersion % Test,
+  "net.kemitix" % "epub-creator" % "1.1.0"
 )
 
 assembly / assemblyJarName := "BrianLewis.jar"
+scalacOptions += "-deprecation"
